@@ -167,7 +167,7 @@ export function App(props) {
               <a href={GeneratedData} download="Imama">
                 <button>
                   <AiOutlineDownload size="30" />
-                  <span>Download Profile</span>
+                  <span>Download Statsu</span>
                 </button>
               </a>
             </div>
@@ -179,11 +179,6 @@ export function App(props) {
                 placeholder="Type Your Name"
                 onchange={({ target }) => setName(target.value)}
               />
-              <input
-                type="text"
-                placeholder="College"
-                onchange={({ target }) => setClass(target.value)}
-              /> 
               <button
                 onClick={() => {
                   file.click();
