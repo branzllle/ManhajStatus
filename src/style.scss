@@ -132,7 +132,7 @@ button:hover {
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: center; /* Center content within the wrapper */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
@@ -141,8 +141,16 @@ button:hover {
   width: 100%;
   background-color: #f8f9fa;
   display: flex;
-  justify-content: center;
-  align-items: center;
+  justify-content: center; /* Center the Croppie viewport horizontally */
+  align-items: center; /* Center the Croppie viewport vertically */
+  position: relative; /* Added for relative positioning of the croppie */
+}
+
+.cr-viewport {
+  /* Added to style the croppie viewport */
+  border: 2px solid #333;
+  border-radius: 50%;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
   position: relative;
 }
 
@@ -157,6 +165,8 @@ button:hover {
   padding: 1rem;
   gap: 0.625rem;
   order: 2; /* Ensure tools are below the slider */
+  width: 100%; /* Make sure tools take full width */
+  justify-content: space-around;
 }
 
 /* Preview */
@@ -183,25 +193,16 @@ button:hover {
 .croppie-container {
   width: 100% !important;
   height: auto !important;
-  display: flex;
+  display: flex; /* Ensure centering of cropper-wrapper */
   justify-content: center;
   align-items: center;
 }
 
 .cr-boundary {
   width: 100%;
-  display: flex;
+  display: flex; /* Ensure centering of viewport within boundary */
   justify-content: center;
   align-items: center;
-}
-
-.cr-viewport {
-  width: 70vw !important;
-  height: 70vw !important;
-  border: 2px solid #333;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-  position: relative !important;
-  margin: 0 !important;
 }
 
 /* Media queries for responsive design */
@@ -284,15 +285,19 @@ button:hover {
 /* Media query for desktop screens (min-width: 769px) */
 @media (min-width: 769px) {
   .cropper-wrapper {
-    max-width: 600px; /* Increase the maximum width on desktop */
+    max-width: 600px;
+  }
+
+  .Crop {
+    min-height: 300px;
   }
 
   .cr-viewport {
-    width: 400px !important; /* Set a fixed width for the viewport on desktop */
-    height: 400px !important; /* Maintain a square aspect ratio */
+    width: 400px !important;
+    height: 400px !important;
   }
 
   .cr-slider-wrap {
-    width: 80% !important; /* Adjust slider width on desktop if needed */
+    width: 80% !important;
   }
 }
