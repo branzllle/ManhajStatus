@@ -280,3 +280,19 @@ button:hover {
     font-size: 0.9rem;
   }
 }
+
+/* Media query for desktop screens (min-width: 769px) */
+@media (min-width: 769px) {
+  .cropper-wrapper {
+    max-width: 600px; /* Increase the maximum width on desktop */
+  }
+
+  .cr-viewport {
+    width: 400px !important; /* Set a fixed width for the viewport on desktop */
+    height: 400px !important; /* Maintain a square aspect ratio */
+  }
+
+  .cr-slider-wrap {
+    width: 80% !important; /* Adjust slider width on desktop if needed */
+  }
+}
