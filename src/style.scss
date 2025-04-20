@@ -5,8 +5,6 @@ body {
   margin: 0;
   padding: 0;
   font-family: 'Montserrat', sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }
 
 /* Loading state */
@@ -17,22 +15,19 @@ body {
   height: 100vh;
   font-size: 1.5rem;
   color: #333;
-  background-color: #f9f9f9;
 }
 
 .Header {
   width: 100%;
-  height: 30vh;
-  min-height: 150px;
+  height: 200px;
   background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
-  margin-bottom: 1.5rem;
-  background-color: #eee;
+  margin-bottom: 20px;
 }
 
 .Cont {
-  padding: 1.5rem;
+  padding: 20px;
   max-width: 600px;
   margin: 0 auto;
 }
@@ -40,28 +35,27 @@ body {
 .form-inputs {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-  margin-bottom: 1.5rem;
+  gap: 10px;
+  margin-bottom: 20px;
 }
 
-.name-input,
-.class-input {
-  padding: 0.75rem;
+.name-input, .class-input {
+  padding: 12px;
   border: 1px solid #ddd;
   border-radius: 5px;
-  font-size: 1rem;
+  font-size: 16px;
 }
 
 .Actions {
   display: flex;
   justify-content: center;
-  margin-top: 1.5rem;
+  margin-top: 20px;
 }
 
 .button-group {
   display: flex;
   flex-direction: column;
-  gap: 0.625rem;
+  gap: 10px;
   width: 100%;
 }
 
@@ -69,17 +63,16 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.625rem;
-  padding: 0.75rem 1.25rem;
+  gap: 10px;
+  padding: 12px 20px;
   background-color: #4a90e2;
   color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
   font-weight: 600;
-  transition: background-color 0.3s ease-in-out;
+  transition: background-color 0.3s;
   width: 100%;
-  font-size: 1rem;
 }
 
 button:hover {
@@ -111,12 +104,16 @@ button:hover {
   height: 100%;
   background-color: rgba(0, 0, 0, 0.8);
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   z-index: 1000;
+  transition: opacity 0.3s;
+}
+
+.cropper-container.hidden {
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.3s ease-in-out;
 }
 
 .cropper-container.visible {
@@ -132,41 +129,22 @@ button:hover {
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  align-items: center; /* Center content within the wrapper */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .Crop {
-  min-height: 200px;
+  min-height: 300px;
   width: 100%;
   background-color: #f8f9fa;
-  display: flex;
-  justify-content: center; /* Center the Croppie viewport horizontally */
-  align-items: center; /* Center the Croppie viewport vertically */
-  position: relative; /* Added for relative positioning of the croppie */
-}
-
-.cr-viewport {
-  /* Added to style the croppie viewport */
-  border: 2px solid #333;
-  border-radius: 50%;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-  position: relative;
-}
-
-.cr-slider-wrap {
-  margin: 1rem auto !important;
-  width: 90% !important;
-  order: 1; /* Move slider below Crop */
 }
 
 .Tools {
   display: flex;
-  padding: 1rem;
-  gap: 0.625rem;
-  order: 2; /* Ensure tools are below the slider */
-  width: 100%; /* Make sure tools take full width */
-  justify-content: space-around;
+  padding: 15px;
+  gap: 10px;
+}
+
+.Tools button {
+  flex: 1;
 }
 
 /* Preview */
@@ -184,25 +162,24 @@ button:hover {
 }
 
 .preview img {
-  max-width: 95%;
-  max-height: 95%;
+  max-width: 90%;
+  max-height: 90%;
   object-fit: contain;
 }
 
-/* Make sure the croppie elements are visible and centered */
+/* Make sure the croppie elements are visible */
 .croppie-container {
   width: 100% !important;
   height: auto !important;
-  display: flex; /* Ensure centering of cropper-wrapper */
-  justify-content: center;
-  align-items: center;
 }
 
-.cr-boundary {
-  width: 100%;
-  display: flex; /* Ensure centering of viewport within boundary */
-  justify-content: center;
-  align-items: center;
+.cr-boundary, .cr-viewport, .cr-slider-wrap {
+  display: block !important;
+}
+
+.cr-slider-wrap {
+  margin: 15px auto !important;
+  width: 90% !important;
 }
 
 /* Media queries for responsive design */
@@ -210,94 +187,28 @@ button:hover {
   .cropper-wrapper {
     width: 95%;
   }
-
+  
   .Crop {
-    min-height: 180px;
+    min-height: 250px;
   }
-
+  
   .cr-viewport {
-    width: 75vw !important;
-    height: 75vw !important;
-  }
-
-  .cr-slider-wrap {
-    margin: 0.75rem auto !important;
-  }
-
-  .Tools button {
-    font-size: 0.85rem;
-    padding: 0.6rem 1rem;
+    width: 200px !important;
+    height: 200px !important;
   }
 }
 
 @media (max-width: 480px) {
-  .Cont {
-    padding: 1rem;
-  }
-
-  .form-inputs {
-    gap: 0.5rem;
-    margin-bottom: 1rem;
-  }
-
-  .name-input,
-  .class-input {
-    padding: 0.6rem;
-    font-size: 0.9rem;
-  }
-
-  .Actions {
-    margin-top: 1rem;
-  }
-
-  .button-group {
-    gap: 0.5rem;
-  }
-
-  button {
-    padding: 0.6rem 1rem;
-    font-size: 0.9rem;
-  }
-
-  .Crop {
-    min-height: 150px;
-  }
-
-  .cr-viewport {
-    width: 85vw !important;
-    height: 85vw !important;
-  }
-
-  .cr-slider-wrap {
-    margin: 0.5rem auto !important;
-  }
-
   .Tools {
     flex-direction: column;
-    gap: 0.5rem;
   }
-
-  .Tools button {
-    font-size: 0.9rem;
-  }
-}
-
-/* Media query for desktop screens (min-width: 769px) */
-@media (min-width: 769px) {
-  .cropper-wrapper {
-    max-width: 600px;
-  }
-
+  
   .Crop {
-    min-height: 300px;
+    min-height: 220px;
   }
-
+  
   .cr-viewport {
-    width: 400px !important;
-    height: 400px !important;
-  }
-
-  .cr-slider-wrap {
-    width: 80% !important;
+    width: 150px !important;
+    height: 150px !important;
   }
 }
