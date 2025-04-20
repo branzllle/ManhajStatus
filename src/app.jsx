@@ -24,13 +24,13 @@ let DocH = 5750
 
 // start point
 let Cropy = 3300  
-let Cropx = 300 
+let Cropx = 418 
 
 // // cut size
 // let CropH = 1650
 // let CropW = 1900
-let CropH = 1650    
-let CropW = 1650  
+let CropH = 1450    
+let CropW = 1190  
 
 export function App(props) {
   let file = document.createElement("input");
