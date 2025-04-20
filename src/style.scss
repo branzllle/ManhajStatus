@@ -1,160 +1,214 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat&display=swap');
-.hi {
-  display: none;
-}
-.vi {
-  position: fixed;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.733);
-  left: 0;
-  top: 0;
-  display: flex;
-  .Crop {
-    margin: auto;
-    width: 100vw;
-    height: 100vh;
-  }
-  .Tools {
-    position: absolute;
-    bottom: 0;
-    z-index: 5;
-  }
-}
+/* Add this to your style.scss file */
 
+/* General styles */
 body {
   margin: 0;
-  font-family: roboto;
+  padding: 0;
+  font-family: 'Montserrat', sans-serif;
 }
-.Header {
-  display: flex;
-  margin: auto;
-  height: 60vh;
-  width: 100vw;
-  background-position: bottom;
-  background-size: contain;
-  background-repeat: no-repeat;
 
+/* Loading state */
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  font-size: 1.5rem;
+  color: #333;
 }
-.preview {
+
+.Header {
+  width: 100%;
+  height: 200px;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
+  margin-bottom: 20px;
+}
+
+.Cont {
+  padding: 20px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.form-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.name-input, .class-input {
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+.Actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.button-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 12px 20px;
+  background-color: #4a90e2;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background-color 0.3s;
+  width: 100%;
+}
+
+button:hover {
+  background-color: #357ab8;
+}
+
+.download-button {
+  background-color: #28a745;
+}
+
+.crop-button {
+  background-color: #28a745;
+}
+
+.cancel-button {
+  background-color: #dc3545;
+}
+
+.preview-button {
+  background-color: #6c757d;
+}
+
+/* Cropper Container */
+.cropper-container {
   position: fixed;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.733);
-  left: 0;
-  top: 0;
-  z-index: 50;
-  overflow: auto;
-  display: flex;
-  img {
-    height: 100vh;
-    margin: auto;
-  }
-}
-.spBanner{
-  width: 100vw;
-  margin-top: 80px;
-}
-.Cont {
-  display: flex;
-  text-align: center;
-  flex-direction: column;
-  place-items: center;
-
-  .Actions {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    box-sizing: border-box;
-    row-gap: 15px;
-    input {
-      background: none;
-      border: none;
-      height: 50px;
-      padding: 10px 10px;
-      font-size: 18px;
-      outline: none;
-      box-sizing: border-box;
-      border-bottom: solid 2px gray;
-    }
-    button {
-      border: none;
-      height: 50px;
-      background: #0e5788;
-      color: white;
-      padding: 0 30px;
-      cursor: pointer;
-      font-size: 20px;
-      line-height: 1;
-      border-radius: 50px;
-      span{
-        position: relative;
-        top: -7px;
-        margin-left: 10px;
-      }
-    }
-  }
-
-  .process {
-    width: min(80%, 300px);
-    background: rgb(255, 255, 255);
-    margin: 20px 0;
-    border: none;
-    font-size: 20px;
-    padding: 10px 5px;
-    // position: absolute;
-    bottom: 0;
-    text-transform: uppercase;
-    cursor: pointer;
-    &.dis {
-      color: gray;
-      &:hover {
-        color: gray;
-        background: white;
-      }
-    }
-    &:hover {
-      background: black;
-      color: white;
-      transition: 0.6s;
-    }
-  }
-}
-
-.GetAct {
-  a {
-    width: 40px;
-  }
-  button {
-    border: none;
-    color: rgb(77, 73, 112);
-    background: white;
-    display: inline-block;
-    width: 40px;
-    height: 40px;
-    margin: 10px;
-    cursor: pointer;
-  }
-}
-.flex-column {
+  background-color: rgba(0, 0, 0, 0.8);
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  flex-wrap: wrap;
+  z-index: 1000;
+  transition: opacity 0.3s;
+}
+
+.cropper-container.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.cropper-container.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.cropper-wrapper {
+  width: 90%;
+  max-width: 500px;
+  background-color: white;
+  border-radius: 10px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.Crop {
+  min-height: 300px;
+  width: 100%;
+  background-color: #f8f9fa;
+}
+
+.Tools {
+  display: flex;
+  padding: 15px;
   gap: 10px;
 }
-@keyframes anim {
-  0% {
-    filter: brightness(1) hue-rotate(0deg);
+
+.Tools button {
+  flex: 1;
+}
+
+/* Preview */
+.preview {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.preview img {
+  max-width: 90%;
+  max-height: 90%;
+  object-fit: contain;
+}
+
+/* Make sure the croppie elements are visible */
+.croppie-container {
+  width: 100% !important;
+  height: auto !important;
+}
+
+.cr-boundary, .cr-viewport, .cr-slider-wrap {
+  display: block !important;
+}
+
+.cr-slider-wrap {
+  margin: 15px auto !important;
+  width: 90% !important;
+}
+
+/* Media queries for responsive design */
+@media (max-width: 768px) {
+  .cropper-wrapper {
+    width: 95%;
   }
-  50% {
-    filter: brightness(4) hue-rotate(360deg);
+  
+  .Crop {
+    min-height: 250px;
   }
-  100% {
-    filter: brightness(1) hue-rotate(0deg);
+  
+  .cr-viewport {
+    width: 200px !important;
+    height: 200px !important;
   }
 }
-.cropieCust{
-  scale: .5;
+
+@media (max-width: 480px) {
+  .Tools {
+    flex-direction: column;
+  }
+  
+  .Crop {
+    min-height: 220px;
+  }
+  
+  .cr-viewport {
+    width: 150px !important;
+    height: 150px !important;
+  }
 }

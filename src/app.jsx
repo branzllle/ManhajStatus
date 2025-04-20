@@ -1,4 +1,4 @@
-import { useEffect, useState } from "preact/hooks";
+import { useEffect, useState } from "react";
 import {
   AiOutlineCamera,
   AiOutlineClose,
@@ -18,13 +18,13 @@ const Cropx = 400;
 const CropH = 1650;
 const CropW = 1650;
 
-let CropArea = document.createElement("div");
-let c;
-let bg = new Image();
-bg.src = "./frame.png";
+// Create the crop area element outside of the component
+let CropArea = null;
+let c = null;
+let bg = null;
 
 export function App() {
-  const [cropVis, setcropVis] = useState(false);
+  const [cropVis, setCropVis] = useState(false);
   const [BgLoadStatus, setBgLoadStatus] = useState(null);
   const [CroppedImg, setCroppedImg] = useState(null);
   const [CroppedImgStatus, setCroppedImgStatus] = useState(null);
@@ -32,13 +32,36 @@ export function App() {
   const [PreviewAct, setPreviewAct] = useState(null);
   const [Name, setName] = useState("");
   const [Class, setClass] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
 
-  let _canv = document.createElement("canvas");
-  let _ctx = _canv.getContext("2d");
-  _canv.width = DocW;
-  _canv.height = DocH;
-
-  bg.onload = () => setBgLoadStatus(1);
+  // Initialize components on mount
+  useEffect(() => {
+    // Create the crop area element
+    CropArea = document.createElement("div");
+    
+    // Initialize background image
+    bg = new Image();
+    bg.src = "./frame.png";
+    bg.onload = () => {
+      setBgLoadStatus(1);
+      setIsLoading(false);
+    };
+    
+    // Handle errors in loading the background
+    bg.onerror = () => {
+      console.error("Failed to load background image");
+      setIsLoading(false);
+    };
+    
+    // Cleanup on unmount
+    return () => {
+      if (c) {
+        c.destroy();
+        c = null;
+      }
+      CropArea = null;
+    };
+  }, []);
 
   useEffect(() => {
     if (CroppedImg) {
@@ -54,9 +77,14 @@ export function App() {
     if (BgLoadStatus && CroppedImgStatus) {
       draw();
     }
-  }, [CroppedImgStatus]);
+  }, [BgLoadStatus, CroppedImgStatus, Name, Class]);
 
   function draw() {
+    let _canv = document.createElement("canvas");
+    let _ctx = _canv.getContext("2d");
+    _canv.width = DocW;
+    _canv.height = DocH;
+    
     let CroppedImgTag = new Image();
     CroppedImgTag.src = CroppedImg;
 
@@ -73,40 +101,69 @@ export function App() {
       let _class = `${Class}`;
 
       _ctx.textAlign = "left";
-      _ctx.font = "600 170px Montserrat, sans-serif";
-      _ctx.fillText(_name, Cropx + CropW + 50, Cropy + CropH - CropH / 3 - 30);
+      _ctx.font = "400 170px Montserrat, sans-serif";
+      _ctx.fillText(_name, Cropx + 10, Cropy + CropH + 70);
       _ctx.font = "600 140px Montserrat, sans-serif";
-      _ctx.fillText(_class, Cropx + CropW + 50, Cropy + CropH + 10 - CropH / 4);
 
       setGeneratedData(_canv.toDataURL({ pixelRatio: 3 }));
     };
   }
 
-  const file = document.createElement("input");
-  file.type = "file";
-  let Img;
-
-  file.onchange = () => {
-    let _file = file.files[0];
-    let fileReader = new FileReader();
-    fileReader.readAsDataURL(_file);
-    fileReader.onload = () => {
-      Img = fileReader.result;
-      Crop();
+  const handleFileUpload = () => {
+    const file = document.createElement("input");
+    file.type = "file";
+    file.accept = "image/*"; // Accept only images
+    
+    file.onchange = () => {
+      if (file.files && file.files[0]) {
+        let _file = file.files[0];
+        let fileReader = new FileReader();
+        fileReader.readAsDataURL(_file);
+        fileReader.onload = () => {
+          Crop(fileReader.result);
+        };
+      }
     };
+    
+    file.click();
   };
 
-  function Crop() {
-    setcropVis(true);
-    c = new Croppie(CropArea, {
-      url: Img,
-      enableOrientation: true,
-      viewport: {
-        height: CropH / 2,
-        width: CropW / 2,
-        type: "square",
-      },
-    });
+  function Crop(imageData) {
+    // Ensure CropArea is initialized
+    if (!CropArea) {
+      CropArea = document.createElement("div");
+    }
+    
+    setCropVis(true);
+    
+    // If there's an existing cropper, destroy it first
+    if (c) {
+      c.destroy();
+    }
+    
+    // Use setTimeout to ensure the DOM is ready
+    setTimeout(() => {
+      try {
+        c = new Croppie(CropArea, {
+          url: imageData,
+          enableOrientation: true,
+          enableZoom: true,
+          enableResize: true,
+          viewport: {
+            height: CropH / 3, // Smaller for mobile
+            width: CropW / 3,  // Smaller for mobile
+            type: "square",
+          },
+          boundary: {
+            height: CropH / 2.5,
+            width: CropW / 2.5,
+          }
+        });
+      } catch (error) {
+        console.error("Error initializing Croppie:", error);
+        setCropVis(false);
+      }
+    }, 100);
   }
 
   function Preview() {
@@ -123,83 +180,132 @@ export function App() {
 
   return (
     <>
-      <div
-        style={{
-          backgroundImage: `url(${GeneratedData || bg.src})`,
-        }}
-        className="Header"
-      ></div>
+      {isLoading ? (
+        <div className="loading">Loading...</div>
+      ) : (
+        <>
+          <div
+            style={{
+              backgroundImage: `url(${GeneratedData || (bg ? bg.src : "")})`,
+            }}
+            className="Header"
+          ></div>
 
-      <div className="Cont">
-        <div className="Actions">
-          {GeneratedData ? (
-            <div>
-              <a href={GeneratedData} download="StatusPoster">
-                <button>
-                  <AiOutlineDownload size="30" />
-                  <span>Download Status</span>
-                </button>
-              </a>
+          <div className="Cont">
+            <div className="form-inputs">
+              <input
+                type="text"
+                placeholder="Enter Name"
+                value={Name}
+                onChange={(e) => setName(e.target.value)}
+                className="name-input"
+              />
             </div>
-          ) : (
-            <div className="flex-column">
-              <button onClick={() => file.click()}>
-                <AiOutlineCamera size="30" />
-                <span>Upload Photo</span>
-              </button>
+            
+            <div className="Actions">
+              {GeneratedData ? (
+                <div className="button-group">
+                  <button onClick={() => setPreviewAct(true)} className="preview-button">
+                    <span>Preview</span>
+                  </button>
+                  <a href={GeneratedData} download="StatusPoster">
+                    <button className="download-button">
+                      <AiOutlineDownload size="30" />
+                      <span>Download Status</span>
+                    </button>
+                  </a>
+                  <button onClick={handleFileUpload} className="upload-button">
+                    <AiOutlineCamera size="30" />
+                    <span>Change Photo</span>
+                  </button>
+                </div>
+              ) : (
+                <div className="flex-column">
+                  <button onClick={handleFileUpload} className="upload-button">
+                    <AiOutlineCamera size="30" />
+                    <span>Upload Photo</span>
+                  </button>
+                </div>
+              )}
             </div>
-          )}
-        </div>
-      </div>
+          </div>
 
-      <div
-        ref={(e) => {
-          if (e) e.innerHTML = "";
-        }}
-      ></div>
-
-      <Preview />
-      <Cropper
-        setCroppedImg={setCroppedImg}
-        visible={cropVis}
-        set={setcropVis}
-      />
+          <Preview />
+          <Cropper
+            setCroppedImg={setCroppedImg}
+            visible={cropVis}
+            set={setCropVis}
+          />
+        </>
+      )}
     </>
   );
 }
 
 function Cropper({ visible, set, setCroppedImg }) {
+  const [cropperReady, setCropperReady] = useState(false);
+
+  // Use useEffect to handle cropper DOM manipulations
+  useEffect(() => {
+    if (visible) {
+      setCropperReady(true);
+    }
+  }, [visible]);
+
+  // Handle cropping
+  const handleCrop = () => {
+    if (c) {
+      c.result({ 
+        type: 'canvas', 
+        size: { 
+          width: CropW, 
+          height: CropH 
+        },
+        format: 'png',
+        quality: 1
+      }).then((result) => {
+        setCroppedImg(result);
+        c.destroy();
+        c = null;
+        set(false);
+      }).catch(err => {
+        console.error("Error cropping image:", err);
+        set(false);
+      });
+    }
+  };
+
+  // Handle cancel
+  const handleCancel = () => {
+    if (c) {
+      c.destroy();
+      c = null;
+    }
+    set(false);
+  };
+
   return (
-    <div className={visible ? "vi" : "hi"}>
-      <div
-        ref={(e) => {
-          if (e) {
-            e.innerHTML = "";
-            e.append(CropArea);
-          }
-        }}
-        className="Crop"
-      ></div>
-      <div className="Tools">
-        <button
-          onClick={() => {
-            c.destroy();
-            set(false);
+    <div className={visible ? "cropper-container visible" : "cropper-container hidden"}>
+      <div className="cropper-wrapper">
+        <div
+          ref={(e) => {
+            if (e && visible && cropperReady) {
+              e.innerHTML = '';
+              e.appendChild(CropArea);
+            }
           }}
-        >
-          <AiOutlineClose size="30" />
-        </button>
-        <button
-          onClick={() => {
-            c.result({ size: { height: CropH, width: CropW } }).then((e) => {
-              setCroppedImg(e);
-              c.destroy();
-              set(false);
-            });
-          }}
-        >
-          <AiOutlineScissor size="30" />
-        </button>
+          className="Crop"
+        ></div>
+        <div className="Tools">
+          <button onClick={handleCancel} className="cancel-button">
+            <AiOutlineClose size="30" />
+            <span>Cancel</span>
+          </button>
+          <button onClick={handleCrop} className="crop-button">
+            <AiOutlineScissor size="30" />
+            <span>Crop</span>
+          </button>
+        </div>
       </div>
     </div>
   );
