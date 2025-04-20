@@ -164,10 +164,10 @@ export function App(props) {
         <div className="Actions">
           {GeneratedData ? (
             <div>
-              <a href={GeneratedData} download="Imama">
+              <a href={GeneratedData} download="Manhaj Status">
                 <button>
                   <AiOutlineDownload size="30" />
-                  <span>Download Statsu</span>
+                  <span>Download Status</span>
                 </button>
               </a>
             </div>
