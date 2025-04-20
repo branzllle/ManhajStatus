@@ -90,7 +90,7 @@ export function App(props) {
 
 
       _ctx.font = " 500 170px Montserrat, sans-serif";
-      _ctx.fillText(_name, 700, Cropy + CropH - CropH / 3 + 600);
+      _ctx.fillText(_name, 700, Cropy + CropH - CropH / 3 + 650);
       _ctx.font = "400 140px Montserrat, sans-serif";
 
       
