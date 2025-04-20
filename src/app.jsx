@@ -1,14 +1,7 @@
 import { useEffect, useState, useRef } from "react";
-import {
-  AiOutlineCamera,
-  AiOutlineClose,
-  AiOutlineDownload,
-  AiOutlineScissor,
-} from "react-icons/ai";
-
 import Croppie from "croppie";
 import "croppie/croppie.css";
-import "./style.scss";
+import { AiOutlineCamera, AiOutlineClose, AiOutlineDownload, AiOutlineScissor } from "react-icons/ai";
 
 // Document and Crop Config
 const DocW = 4500;
@@ -17,11 +10,6 @@ const Cropy = 3300;
 const Cropx = 400;
 const CropH = 1650;
 const CropW = 1650;
-
-// Create the crop area element outside of the component
-let CropArea = null;
-let c = null;
-let bg = null;
 
 export function App() {
   const [cropVis, setCropVis] = useState(false);
@@ -33,32 +21,38 @@ export function App() {
   const [Name, setName] = useState("");
   const [Class, setClass] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [imageData, setImageData] = useState(null);
+  
+  // Refs for persistent values
+  const bgRef = useRef(null);
+  const cropAreaRef = useRef(null);
+  const croppieRef = useRef(null);
 
+  // Initialize components on mount
   useEffect(() => {
     // Create the crop area element
-    CropArea = document.createElement("div");
-
+    cropAreaRef.current = document.createElement("div");
+    
     // Initialize background image
-    bg = new Image();
-    bg.src = "./frame.png";
-    bg.onload = () => {
+    bgRef.current = new Image();
+    bgRef.current.src = "./frame.png";
+    bgRef.current.onload = () => {
       setBgLoadStatus(1);
       setIsLoading(false);
     };
-
+    
     // Handle errors in loading the background
-    bg.onerror = () => {
+    bgRef.current.onerror = () => {
       console.error("Failed to load background image");
       setIsLoading(false);
     };
-
+    
     // Cleanup on unmount
     return () => {
-      if (c) {
-        c.destroy();
-        c = null;
+      if (croppieRef.current) {
+        croppieRef.current.destroy();
+        croppieRef.current = null;
       }
-      CropArea = null;
     };
   }, []);
 
@@ -79,25 +73,25 @@ export function App() {
   }, [BgLoadStatus, CroppedImgStatus, Name, Class]);
 
   function draw() {
-    let _canv = document.createElement("canvas");
-    let _ctx = _canv.getContext("2d");
+    const _canv = document.createElement("canvas");
+    const _ctx = _canv.getContext("2d");
     _canv.width = DocW;
     _canv.height = DocH;
-
-    let CroppedImgTag = new Image();
+    
+    const CroppedImgTag = new Image();
     CroppedImgTag.src = CroppedImg;
 
     CroppedImgTag.onload = () => {
       _ctx.clearRect(0, 0, _canv.width, _canv.height);
       _ctx.drawImage(CroppedImgTag, Cropx, Cropy, CropW, CropH);
-      _ctx.drawImage(bg, 0, 0, _canv.width, _canv.height);
+      _ctx.drawImage(bgRef.current, 0, 0, _canv.width, _canv.height);
 
       _ctx.fillStyle = "black";
 
-      let _name = Name.split(" ")
+      const _name = Name.split(" ")
         .map((e) => e.charAt(0).toUpperCase() + e.slice(1))
         .join(" ");
-      let _class = `${Class}`;
+      const _class = `${Class}`;
 
       _ctx.textAlign = "left";
       _ctx.font = "600 170px Montserrat, sans-serif";
@@ -112,71 +106,22 @@ export function App() {
   const handleFileUpload = () => {
     const file = document.createElement("input");
     file.type = "file";
-    file.accept = "image/*"; // Accept only images
-
+    file.accept = "image/*";
+    
     file.onchange = () => {
       if (file.files && file.files[0]) {
-        let _file = file.files[0];
-        let fileReader = new FileReader();
+        const _file = file.files[0];
+        const fileReader = new FileReader();
         fileReader.readAsDataURL(_file);
         fileReader.onload = () => {
-          Crop(fileReader.result);
+          setImageData(fileReader.result);
+          setCropVis(true);
         };
       }
     };
-
+    
     file.click();
   };
-
-  function Crop(imageData) {
-    // Ensure CropArea is initialized
-    if (!CropArea) {
-      CropArea = document.createElement("div");
-    }
-
-    setCropVis(true);
-
-    // If there's an existing cropper, destroy it first
-    if (c) {
-      c.destroy();
-    }
-
-    // Use setTimeout to ensure the DOM is ready
-    setTimeout(() => {
-      try {
-        c = new Croppie(CropArea, {
-          url: imageData,
-          enableOrientation: true,
-          enableZoom: true,
-          enableResize: true,
-          viewport: {
-            height: CropH / 3, // Smaller for mobile
-            width: CropW / 3,  // Smaller for mobile
-            type: "square",
-          },
-          boundary: {
-            height: CropH / 2.5,
-            width: CropW / 2.5,
-          }
-        });
-      } catch (error) {
-        console.error("Error initializing Croppie:", error);
-        setCropVis(false);
-      }
-    }, 100);
-  }
-
-  function Preview() {
-    return (
-      <>
-        {PreviewAct && (
-          <div onClick={() => setPreviewAct(false)} className="preview">
-            <img src={GeneratedData} alt="Preview" />
-          </div>
-        )}
-      </>
-    );
-  }
 
   return (
     <>
@@ -186,7 +131,7 @@ export function App() {
         <>
           <div
             style={{
-              backgroundImage: `url(${GeneratedData || (bg ? bg.src : "")})`,
+              backgroundImage: `url(${GeneratedData || (bgRef.current ? bgRef.current.src : "")})`,
             }}
             className="Header"
           ></div>
@@ -208,7 +153,7 @@ export function App() {
                 className="class-input"
               />
             </div>
-
+            
             <div className="Actions">
               {GeneratedData ? (
                 <div className="button-group">
@@ -237,109 +182,94 @@ export function App() {
             </div>
           </div>
 
-          <Preview />
-          <Cropper
-            setCroppedImg={setCroppedImg}
-            visible={cropVis}
-            set={setCropVis}
-          />
+          {PreviewAct && (
+            <div onClick={() => setPreviewAct(false)} className="preview">
+              <img src={GeneratedData} alt="Preview" />
+            </div>
+          )}
+          
+          <div className={cropVis ? "vi" : "hi"}>
+            <div
+              ref={(e) => {
+                if (e && cropVis && imageData) {
+                  e.innerHTML = '';
+                  e.appendChild(cropAreaRef.current);
+                  
+                  // Initialize Croppie with a slight delay to ensure DOM is ready
+                  setTimeout(() => {
+                    try {
+                      if (croppieRef.current) {
+                        croppieRef.current.destroy();
+                      }
+                      croppieRef.current = new Croppie(cropAreaRef.current, {
+                        url: imageData,
+                        enableOrientation: true,
+                        enableZoom: true,
+                        enableResize: true,
+                        viewport: {
+                          height: CropH / 3,
+                          width: CropW / 3,
+                          type: "square",
+                        },
+                        boundary: {
+                          height: CropH / 2.5,
+                          width: CropW / 2.5,
+                        }
+                      });
+                    } catch (error) {
+                      console.error("Error initializing Croppie:", error);
+                      setCropVis(false);
+                    }
+                  }, 100);
+                }
+              }}
+              className="Crop"
+            ></div>
+            <div className="Tools">
+              <button 
+                onClick={() => {
+                  if (croppieRef.current) {
+                    croppieRef.current.destroy();
+                    croppieRef.current = null;
+                  }
+                  setCropVis(false);
+                }} 
+                className="cancel-button"
+              >
+                <AiOutlineClose size="30" />
+                <span>Cancel</span>
+              </button>
+              <button 
+                onClick={() => {
+                  if (croppieRef.current) {
+                    croppieRef.current.result({ 
+                      type: 'canvas', 
+                      size: { 
+                        width: CropW, 
+                        height: CropH 
+                      },
+                      format: 'png',
+                      quality: 1
+                    }).then((result) => {
+                      setCroppedImg(result);
+                      croppieRef.current.destroy();
+                      croppieRef.current = null;
+                      setCropVis(false);
+                    }).catch(err => {
+                      console.error("Error cropping image:", err);
+                      setCropVis(false);
+                    });
+                  }
+                }} 
+                className="crop-button"
+              >
+                <AiOutlineScissor size="30" />
+                <span>Crop</span>
+              </button>
+            </div>
+          </div>
         </>
       )}
     </>
-  );
-}
-
-function Cropper({ visible, set, setCroppedImg }) {
-  const [cropperReady, setCropperReady] = useState(false);
-  const cropperRef = useRef(null);
-
-  useEffect(() => {
-    if (visible) {
-      setCropperReady(true);
-    }
-  }, [visible]);
-
-  useEffect(() => {
-    if (cropperRef.current && visible && cropperReady) {
-      cropperRef.current.innerHTML = '';
-      cropperRef.current.appendChild(CropArea);
-      try {
-        c = new Croppie(CropArea, {
-          url: CropArea.dataset.url, // Access URL from data attribute
-          enableOrientation: true,
-          enableZoom: true,
-          enableResize: true,
-          viewport: {
-            height: CropH / 3,
-            width: CropW / 3,
-            type: "square",
-          },
-          boundary: {
-            height: CropH / 2.5,
-            width: CropW / 2.5,
-          }
-        });
-      } catch (error) {
-        console.error("Error initializing Croppie:", error);
-        set(false);
-      }
-    } else if (!visible && c) {
-      c.destroy();
-      c = null;
-    }
-  }, [visible, cropperReady]);
-
-  useEffect(() => {
-    if (visible && CropArea && c && CropArea.dataset.url) {
-      c.bind({ url: CropArea.dataset.url });
-    }
-  }, [visible, CropArea]);
-
-
-  // Handle cropping
-  const handleCrop = () => {
-    if (c) {
-      c.result({
-        type: 'canvas',
-        size: {
-          width: CropW,
-          height: CropH
-        },
-        format: 'png',
-        quality: 1
-      }).then((result) => {
-        setCroppedImg(result);
-        set(false);
-      }).catch(err => {
-        console.error("Error cropping image:", err);
-        set(false);
-      });
-    }
-  };
-
-  // Handle cancel
-  const handleCancel = () => {
-    set(false);
-  };
-
-  return (
-    <div className={visible ? "cropper-container visible" : "cropper-container hidden"}>
-      <div className="cropper-wrapper">
-        <div
-          ref={cropperRef}
-          className="Crop"
-        ></div>
-        <div className="Tools">
-          <button onClick={handleCancel} className="cancel-button">
-            <AiOutlineClose size="30" />
-            <span>Cancel</span>
-          </button>
-          <button onClick={handleCrop} className="crop-button">
-            <AiOutlineScissor size="30" />
-            <span>Crop</span>
-          </button>
-        </div>
-      </div>
-    </div>
   );
 }

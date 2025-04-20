@@ -1,11 +1,4 @@
-/* Add this to your style.scss file */
-
-/* General styles */
-body {
-  margin: 0;
-  padding: 0;
-  font-family: 'Montserrat', sans-serif;
-}
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap');
 
 /* Loading state */
 .loading {
@@ -14,205 +7,213 @@ body {
   align-items: center;
   height: 100vh;
   font-size: 1.5rem;
-  color: #333;
+  color: #444;
+}
+
+.hi {
+  display: none;
+}
+
+.vi {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.733);
+  left: 0;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.vi .Crop {
+  margin: auto;
+  width: 100%;
+  max-width: 500px;
+  height: 60vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.vi .Tools {
+  margin-top: 20px;
+  z-index: 5;
+  display: flex;
+  gap: 10px;
+  width: 90%;
+  max-width: 500px;
+  justify-content: space-between;
+}
+
+body {
+  margin: 0;
+  font-family: 'Montserrat', sans-serif;
+  background-color: #f5f5f5;
 }
 
 .Header {
+  display: flex;
+  margin: auto;
+  height: 60vh;
   width: 100%;
-  height: 200px;
-  background-size: contain;
   background-position: center;
+  background-size: contain;
   background-repeat: no-repeat;
-  margin-bottom: 20px;
+}
+
+.preview {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.733);
+  left: 0;
+  top: 0;
+  z-index: 50;
+  overflow: auto;
+  display: flex;
+}
+
+.preview img {
+  max-height: 90vh;
+  max-width: 90vw;
+  object-fit: contain;
+  margin: auto;
 }
 
 .Cont {
-  padding: 20px;
-  max-width: 600px;
-  margin: 0 auto;
+  display: flex;
+  text-align: center;
+  flex-direction: column;
+  place-items: center;
+  padding: 0 20px;
+  margin-top: 20px;
 }
 
 .form-inputs {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  width: 100%;
+  max-width: 400px;
   margin-bottom: 20px;
+  gap: 12px;
 }
 
-.name-input, .class-input {
-  padding: 12px;
+.form-inputs input {
+  padding: 12px 15px;
   border: 1px solid #ddd;
-  border-radius: 5px;
+  border-radius: 6px;
   font-size: 16px;
+  font-family: 'Montserrat', sans-serif;
 }
 
-.Actions {
+.Cont .Actions {
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
-  margin-top: 20px;
+  box-sizing: border-box;
+  row-gap: 15px;
+  width: 100%;
+  max-width: 400px;
 }
 
 .button-group {
   display: flex;
   flex-direction: column;
-  gap: 10px;
   width: 100%;
+  gap: 12px;
 }
 
-button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  padding: 12px 20px;
-  background-color: #4a90e2;
-  color: white;
+.Cont button {
   border: none;
-  border-radius: 5px;
+  height: 50px;
+  background: #0e5788;
+  color: white;
+  padding: 0 30px;
   cursor: pointer;
-  font-weight: 600;
-  transition: background-color 0.3s;
+  font-size: 20px;
+  line-height: 1;
+  border-radius: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   width: 100%;
+  transition: background-color 0.2s ease;
 }
 
-button:hover {
-  background-color: #357ab8;
+.Cont button:hover {
+  background: #0a4570;
 }
 
-.download-button {
-  background-color: #28a745;
+.Cont button span {
+  position: relative;
+  margin-left: 10px;
 }
 
-.crop-button {
-  background-color: #28a745;
-}
-
-.cancel-button {
-  background-color: #dc3545;
-}
-
-.preview-button {
-  background-color: #6c757d;
-}
-
-/* Cropper Container */
-.cropper-container {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.8);
+.flex-column {
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
-  transition: opacity 0.3s;
-}
-
-.cropper-container.hidden {
-  opacity: 0;
-  pointer-events: none;
-}
-
-.cropper-container.visible {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-.cropper-wrapper {
-  width: 90%;
-  max-width: 500px;
-  background-color: white;
-  border-radius: 10px;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
-
-.Crop {
-  min-height: 300px;
-  width: 100%;
-  background-color: #f8f9fa;
-}
-
-.Tools {
-  display: flex;
-  padding: 15px;
+  flex-wrap: wrap;
   gap: 10px;
-}
-
-.Tools button {
-  flex: 1;
-}
-
-/* Preview */
-.preview {
-  position: fixed;
-  top: 0;
-  left: 0;
   width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.8);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
 }
 
-.preview img {
-  max-width: 90%;
-  max-height: 90%;
-  object-fit: contain;
-}
-
-/* Make sure the croppie elements are visible */
+/* Make sure Croppie elements are visible and sized properly */
 .croppie-container {
   width: 100% !important;
   height: auto !important;
 }
 
-.cr-boundary, .cr-viewport, .cr-slider-wrap {
-  display: block !important;
+.cr-boundary {
+  width: 100% !important;
+  max-width: 400px;
+}
+
+.cr-viewport {
+  box-shadow: 0 0 2px 1px rgba(0, 0, 0, 0.5) !important;
 }
 
 .cr-slider-wrap {
-  margin: 15px auto !important;
   width: 90% !important;
+  margin: 15px auto !important;
 }
 
-/* Media queries for responsive design */
+/* Media queries for mobile responsiveness */
 @media (max-width: 768px) {
-  .cropper-wrapper {
-    width: 95%;
+  .vi .Crop {
+    height: 50vh;
   }
-
-  .Crop {
-    min-height: 200px;
+  
+  .vi .Tools {
+    width: 100%;
+    padding: 0 20px;
+    box-sizing: border-box;
+    position: fixed;
+    bottom: 30px;
+    left: 0;
   }
-
-  .cr-viewport {
-    width: 60vw !important;
-    height: 60vw !important;
+  
+  .Header {
+    height: 40vh;
   }
 }
 
 @media (max-width: 480px) {
-  .cropper-wrapper {
-    width: 98%;
+  .vi .Crop {
+    height: 40vh;
   }
-
-  .Crop {
-    min-height: 180px;
+  
+  .Header {
+    height: 30vh;
   }
-
-  .cr-viewport {
-    width: 80vw !important;
-    height: 80vw !important;
-  }
-
-  .Tools {
-    flex-direction: column;
+  
+  .Cont button {
+    font-size: 16px;
+    padding: 0 20px;
   }
 }
