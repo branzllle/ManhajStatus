@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import {
   AiOutlineCamera,
   AiOutlineClose,
@@ -10,18 +10,13 @@ import Croppie from "croppie";
 import "croppie/croppie.css";
 import "./style.scss";
 
-// Document and Crop Config
+// Document and Crop Config (Consider making these dynamic or more responsive)
 const DocW = 4500;
 const DocH = 5750;
 const Cropy = 3300;
 const Cropx = 400;
 const CropH = 1650;
 const CropW = 1650;
-
-// Create the crop area element outside of the component
-let CropArea = null;
-let c = null;
-let bg = null;
 
 export function App() {
   const [cropVis, setCropVis] = useState(false);
@@ -33,33 +28,29 @@ export function App() {
   const [Name, setName] = useState("");
   const [Class, setClass] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const cropAreaRef = useRef(null); // Ref for the Croppie container
+  const croppieInstance = useRef(null); // Ref to hold the Croppie instance
 
-  // Initialize components on mount
   useEffect(() => {
-    // Create the crop area element
-    CropArea = document.createElement("div");
-    
     // Initialize background image
-    bg = new Image();
+    const bg = new Image();
     bg.src = "./frame.png";
     bg.onload = () => {
       setBgLoadStatus(1);
       setIsLoading(false);
     };
-    
-    // Handle errors in loading the background
+
     bg.onerror = () => {
       console.error("Failed to load background image");
       setIsLoading(false);
     };
-    
+
     // Cleanup on unmount
     return () => {
-      if (c) {
-        c.destroy();
-        c = null;
+      if (croppieInstance.current) {
+        croppieInstance.current.destroy();
+        croppieInstance.current = null;
       }
-      CropArea = null;
     };
   }, []);
 
@@ -80,84 +71,86 @@ export function App() {
   }, [BgLoadStatus, CroppedImgStatus, Name, Class]);
 
   function draw() {
-    let _canv = document.createElement("canvas");
-    let _ctx = _canv.getContext("2d");
+    const _canv = document.createElement("canvas");
+    const _ctx = _canv.getContext("2d");
     _canv.width = DocW;
     _canv.height = DocH;
-    
-    let CroppedImgTag = new Image();
+
+    const CroppedImgTag = new Image();
     CroppedImgTag.src = CroppedImg;
 
     CroppedImgTag.onload = () => {
       _ctx.clearRect(0, 0, _canv.width, _canv.height);
       _ctx.drawImage(CroppedImgTag, Cropx, Cropy, CropW, CropH);
-      _ctx.drawImage(bg, 0, 0, _canv.width, _canv.height);
 
-      _ctx.fillStyle = "black";
+      const bg = new Image();
+      bg.src = "./frame.png"; // Ensure background is loaded again for drawing
+      bg.onload = () => {
+        _ctx.drawImage(bg, 0, 0, _canv.width, _canv.height);
 
-      let _name = Name.split(" ")
-        .map((e) => e.charAt(0).toUpperCase() + e.slice(1))
-        .join(" ");
-      let _class = `${Class}`;
+        _ctx.fillStyle = "black";
 
-      _ctx.textAlign = "left";
-      _ctx.font = "400 170px Montserrat, sans-serif";
-      _ctx.fillText(_name, Cropx + 10, Cropy + CropH + 70);
-      _ctx.font = "600 140px Montserrat, sans-serif";
+        const _name = Name.split(" ")
+          .map((e) => e.charAt(0).toUpperCase() + e.slice(1))
+          .join(" ");
+        const _class = `${Class}`;
 
-      setGeneratedData(_canv.toDataURL({ pixelRatio: 3 }));
+        _ctx.textAlign = "left";
+        _ctx.font = "600 170px Montserrat, sans-serif";
+        _ctx.fillText(_name, Cropx + CropW + 50, Cropy + CropH - CropH / 3 - 30);
+        _ctx.font = "600 140px Montserrat, sans-serif";
+        _ctx.fillText(_class, Cropx + CropW + 50, Cropy + CropH + 10 - CropH / 4);
+
+        setGeneratedData(_canv.toDataURL({ pixelRatio: 3 }));
+      };
     };
   }
 
   const handleFileUpload = () => {
     const file = document.createElement("input");
     file.type = "file";
-    file.accept = "image/*"; // Accept only images
-    
+    file.accept = "image/*";
+
     file.onchange = () => {
       if (file.files && file.files[0]) {
-        let _file = file.files[0];
-        let fileReader = new FileReader();
+        const _file = file.files[0];
+        const fileReader = new FileReader();
         fileReader.readAsDataURL(_file);
         fileReader.onload = () => {
           Crop(fileReader.result);
         };
       }
     };
-    
+
     file.click();
   };
 
   function Crop(imageData) {
-    // Ensure CropArea is initialized
-    if (!CropArea) {
-      CropArea = document.createElement("div");
-    }
-    
     setCropVis(true);
-    
+
     // If there's an existing cropper, destroy it first
-    if (c) {
-      c.destroy();
+    if (croppieInstance.current) {
+      croppieInstance.current.destroy();
+      croppieInstance.current = null;
     }
-    
+
     // Use setTimeout to ensure the DOM is ready
     setTimeout(() => {
       try {
-        c = new Croppie(CropArea, {
+        croppieInstance.current = new Croppie(cropAreaRef.current, {
           url: imageData,
           enableOrientation: true,
           enableZoom: true,
           enableResize: true,
           viewport: {
             height: CropH / 3, // Smaller for mobile
-            width: CropW / 3,  // Smaller for mobile
+            width: CropW / 3,   // Smaller for mobile
             type: "square",
           },
           boundary: {
             height: CropH / 2.5,
             width: CropW / 2.5,
-          }
+          },
         });
       } catch (error) {
         console.error("Error initializing Croppie:", error);
@@ -186,7 +179,7 @@ export function App() {
         <>
           <div
             style={{
-              backgroundImage: `url(${GeneratedData || (bg ? bg.src : "")})`,
+              backgroundImage: `url(${GeneratedData || (BgLoadStatus ? "./frame.png" : "")})`,
             }}
             className="Header"
           ></div>
@@ -201,7 +194,7 @@ export function App() {
                 className="name-input"
               />
             </div>
-            
+
             <div className="Actions">
               {GeneratedData ? (
                 <div className="button-group">
@@ -235,6 +228,10 @@ export function App() {
             setCroppedImg={setCroppedImg}
             visible={cropVis}
             set={setCropVis}
+            cropAreaRef={cropAreaRef}
+            croppieInstance={croppieInstance}
+            CropH={CropH}
+            CropW={CropW}
           />
         </>
       )}
@@ -242,44 +239,44 @@ export function App() {
   );
 }
 
-function Cropper({ visible, set, setCroppedImg }) {
+function Cropper({ visible, set, setCroppedImg, cropAreaRef, croppieInstance, CropH, CropW }) {
   const [cropperReady, setCropperReady] = useState(false);
 
-  // Use useEffect to handle cropper DOM manipulations
   useEffect(() => {
     if (visible) {
       setCropperReady(true);
     }
   }, [visible]);
 
-  // Handle cropping
   const handleCrop = () => {
-    if (c) {
-      c.result({ 
-        type: 'canvas', 
-        size: { 
-          width: CropW, 
-          height: CropH 
-        },
-        format: 'png',
-        quality: 1
-      }).then((result) => {
-        setCroppedImg(result);
-        c.destroy();
-        c = null;
-        set(false);
-      }).catch(err => {
-        console.error("Error cropping image:", err);
-        set(false);
-      });
+    if (croppieInstance.current) {
+      croppieInstance.current
+        .result({
+          type: 'canvas',
+          size: {
+            width: CropW,
+            height: CropH
+          },
+          format: 'png',
+          quality: 1
+        })
+        .then((result) => {
+          setCroppedImg(result);
+          croppieInstance.current.destroy();
+          croppieInstance.current = null;
+          set(false);
+        })
+        .catch(err => {
+          console.error("Error cropping image:", err);
+          set(false);
+        });
     }
   };
 
-  // Handle cancel
   const handleCancel = () => {
-    if (c) {
-      c.destroy();
-      c = null;
+    if (croppieInstance.current) {
+      croppieInstance.current.destroy();
+      croppieInstance.current = null;
     }
     set(false);
   };
@@ -288,12 +285,7 @@ function Cropper({ visible, set, setCroppedImg }) {
     <div className={visible ? "cropper-container visible" : "cropper-container hidden"}>
       <div className="cropper-wrapper">
         <div
-          ref={(e) => {
-            if (e && visible && cropperReady) {
-              e.innerHTML = '';
-              e.appendChild(CropArea);
-            }
-          }}
+          ref={cropAreaRef}
           className="Crop"
         ></div>
         <div className="Tools">
