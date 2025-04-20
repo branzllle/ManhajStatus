@@ -187,28 +187,32 @@ button:hover {
   .cropper-wrapper {
     width: 95%;
   }
-  
+
   .Crop {
-    min-height: 250px;
+    min-height: 200px;
   }
-  
+
   .cr-viewport {
-    width: 200px !important;
-    height: 200px !important;
+    width: 60vw !important;
+    height: 60vw !important;
   }
 }
 
 @media (max-width: 480px) {
+  .cropper-wrapper {
+    width: 98%;
+  }
+
+  .Crop {
+    min-height: 180px;
+  }
+
+  .cr-viewport {
+    width: 80vw !important;
+    height: 80vw !important;
+  }
+
   .Tools {
     flex-direction: column;
-  }
-  
-  .Crop {
-    min-height: 220px;
-  }
-  
-  .cr-viewport {
-    width: 150px !important;
-    height: 150px !important;
   }
 }

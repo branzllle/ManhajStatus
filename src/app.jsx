@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import {
   AiOutlineCamera,
   AiOutlineClose,
@@ -34,11 +34,10 @@ export function App() {
   const [Class, setClass] = useState("");
   const [isLoading, setIsLoading] = useState(true);
 
-  // Initialize components on mount
   useEffect(() => {
     // Create the crop area element
     CropArea = document.createElement("div");
-    
+
     // Initialize background image
     bg = new Image();
     bg.src = "./frame.png";
@@ -46,13 +45,13 @@ export function App() {
       setBgLoadStatus(1);
       setIsLoading(false);
     };
-    
+
     // Handle errors in loading the background
     bg.onerror = () => {
       console.error("Failed to load background image");
       setIsLoading(false);
     };
-    
+
     // Cleanup on unmount
     return () => {
       if (c) {
@@ -84,7 +83,7 @@ export function App() {
     let _ctx = _canv.getContext("2d");
     _canv.width = DocW;
     _canv.height = DocH;
-    
+
     let CroppedImgTag = new Image();
     CroppedImgTag.src = CroppedImg;
 
@@ -114,7 +113,7 @@ export function App() {
     const file = document.createElement("input");
     file.type = "file";
     file.accept = "image/*"; // Accept only images
-    
+
     file.onchange = () => {
       if (file.files && file.files[0]) {
         let _file = file.files[0];
@@ -125,7 +124,7 @@ export function App() {
         };
       }
     };
-    
+
     file.click();
   };
 
@@ -134,14 +133,14 @@ export function App() {
     if (!CropArea) {
       CropArea = document.createElement("div");
     }
-    
+
     setCropVis(true);
-    
+
     // If there's an existing cropper, destroy it first
     if (c) {
       c.destroy();
     }
-    
+
     // Use setTimeout to ensure the DOM is ready
     setTimeout(() => {
       try {
@@ -209,7 +208,7 @@ export function App() {
                 className="class-input"
               />
             </div>
-            
+
             <div className="Actions">
               {GeneratedData ? (
                 <div className="button-group">
@@ -252,29 +251,64 @@ export function App() {
 
 function Cropper({ visible, set, setCroppedImg }) {
   const [cropperReady, setCropperReady] = useState(false);
+  const cropperRef = useRef(null);
 
-  // Use useEffect to handle cropper DOM manipulations
   useEffect(() => {
     if (visible) {
       setCropperReady(true);
     }
   }, [visible]);
 
+  useEffect(() => {
+    if (cropperRef.current && visible && cropperReady) {
+      cropperRef.current.innerHTML = '';
+      cropperRef.current.appendChild(CropArea);
+      try {
+        c = new Croppie(CropArea, {
+          url: CropArea.dataset.url, // Access URL from data attribute
+          enableOrientation: true,
+          enableZoom: true,
+          enableResize: true,
+          viewport: {
+            height: CropH / 3,
+            width: CropW / 3,
+            type: "square",
+          },
+          boundary: {
+            height: CropH / 2.5,
+            width: CropW / 2.5,
+          }
+        });
+      } catch (error) {
+        console.error("Error initializing Croppie:", error);
+        set(false);
+      }
+    } else if (!visible && c) {
+      c.destroy();
+      c = null;
+    }
+  }, [visible, cropperReady]);
+
+  useEffect(() => {
+    if (visible && CropArea && c && CropArea.dataset.url) {
+      c.bind({ url: CropArea.dataset.url });
+    }
+  }, [visible, CropArea]);
+
+
   // Handle cropping
   const handleCrop = () => {
     if (c) {
-      c.result({ 
-        type: 'canvas', 
-        size: { 
-          width: CropW, 
-          height: CropH 
+      c.result({
+        type: 'canvas',
+        size: {
+          width: CropW,
+          height: CropH
         },
         format: 'png',
         quality: 1
       }).then((result) => {
         setCroppedImg(result);
-        c.destroy();
-        c = null;
         set(false);
       }).catch(err => {
         console.error("Error cropping image:", err);
@@ -285,10 +319,6 @@ function Cropper({ visible, set, setCroppedImg }) {
 
   // Handle cancel
   const handleCancel = () => {
-    if (c) {
-      c.destroy();
-      c = null;
-    }
     set(false);
   };
 
@@ -296,12 +326,7 @@ function Cropper({ visible, set, setCroppedImg }) {
     <div className={visible ? "cropper-container visible" : "cropper-container hidden"}>
       <div className="cropper-wrapper">
         <div
-          ref={(e) => {
-            if (e && visible && cropperReady) {
-              e.innerHTML = '';
-              e.appendChild(CropArea);
-            }
-          }}
+          ref={cropperRef}
           className="Crop"
         ></div>
         <div className="Tools">
