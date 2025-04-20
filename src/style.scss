@@ -5,8 +5,8 @@ body {
   margin: 0;
   padding: 0;
   font-family: 'Montserrat', sans-serif;
-  -webkit-font-smoothing: antialiased; /* Improve font rendering for smoother edges */
-  -moz-osx-font-smoothing: grayscale; /* Improve font rendering for grayscale fonts */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* Loading state */
@@ -17,18 +17,18 @@ body {
   height: 100vh;
   font-size: 1.5rem;
   color: #333;
-  background-color: #f9f9f9; /* Light background for better contrast */
+  background-color: #f9f9f9;
 }
 
 .Header {
   width: 100%;
-  height: 30vh; /* Using viewport height for better responsiveness */
-  min-height: 150px; /* Ensure a minimum height */
+  height: 30vh;
+  min-height: 150px;
   background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
-  margin-bottom: 1.5rem; /* Using rem for better scalability */
-  background-color: #eee; /* Placeholder background */
+  margin-bottom: 1.5rem;
+  background-color: #eee;
 }
 
 .Cont {
@@ -40,7 +40,7 @@ body {
 .form-inputs {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem; /* Using rem for spacing */
+  gap: 0.75rem;
   margin-bottom: 1.5rem;
 }
 
@@ -49,7 +49,7 @@ body {
   padding: 0.75rem;
   border: 1px solid #ddd;
   border-radius: 5px;
-  font-size: 1rem; /* Using rem for font size */
+  font-size: 1rem;
 }
 
 .Actions {
@@ -61,7 +61,7 @@ body {
 .button-group {
   display: flex;
   flex-direction: column;
-  gap: 0.625rem; /* Using rem for spacing */
+  gap: 0.625rem;
   width: 100%;
 }
 
@@ -77,9 +77,9 @@ button {
   border-radius: 5px;
   cursor: pointer;
   font-weight: 600;
-  transition: background-color 0.3s ease-in-out; /* Smoother transition */
+  transition: background-color 0.3s ease-in-out;
   width: 100%;
-  font-size: 1rem; /* Using rem for font size */
+  font-size: 1rem;
 }
 
 button:hover {
@@ -111,7 +111,6 @@ button:hover {
   height: 100%;
   background-color: rgba(0, 0, 0, 0.8);
   display: flex;
-  flex-direction: column;
   justify-content: center;
   align-items: center;
   z-index: 1000;
@@ -133,16 +132,17 @@ button:hover {
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+  align-items: center; /* Center content within the wrapper */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .Crop {
-  min-height: 200px; /* Adjusted min-height */
+  min-height: 200px;
   width: 100%;
   background-color: #f8f9fa;
   display: flex;
-  justify-content: center;
-  align-items: center;
+  justify-content: center; /* Center the Croppie viewport horizontally */
+  align-items: center; /* Center the Croppie viewport vertically */
 }
 
 .Tools {
@@ -153,7 +153,7 @@ button:hover {
 
 .Tools button {
   flex: 1;
-  font-size: 0.9rem; /* Slightly smaller font for tools on mobile */
+  font-size: 0.9rem;
 }
 
 /* Preview */
@@ -171,21 +171,34 @@ button:hover {
 }
 
 .preview img {
-  max-width: 95%; /* Slightly larger max-width for preview */
+  max-width: 95%;
   max-height: 95%;
   object-fit: contain;
 }
 
-/* Make sure the croppie elements are visible */
+/* Make sure the croppie elements are visible and centered */
 .croppie-container {
   width: 100% !important;
   height: auto !important;
+  display: flex; /* Ensure centering of cropper-wrapper */
+  justify-content: center;
+  align-items: center;
 }
 
-.cr-boundary,
-.cr-viewport,
-.cr-slider-wrap {
-  display: block !important;
+.cr-boundary {
+  width: 100%;
+  display: flex; /* Ensure centering of viewport within boundary */
+  justify-content: center;
+  align-items: center;
+}
+
+.cr-viewport {
+  width: 70vw !important;
+  height: 70vw !important;
+  border: 2px solid #333;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  position: relative !important;
+  margin: 0 !important;
 }
 
 .cr-slider-wrap {
@@ -200,12 +213,12 @@ button:hover {
   }
 
   .Crop {
-    min-height: 180px; /* Further adjusted min-height for smaller screens */
+    min-height: 180px;
   }
 
   .cr-viewport {
-    width: 70vw !important; /* Using viewport width for better responsiveness */
-    height: 70vw !important; /* Maintaining square aspect ratio */
+    width: 75vw !important;
+    height: 75vw !important;
   }
 
   .Tools button {
@@ -244,7 +257,7 @@ button:hover {
   }
 
   .Crop {
-    min-height: 150px; /* Further adjusted min-height for even smaller screens */
+    min-height: 150px;
   }
 
   .cr-viewport {
