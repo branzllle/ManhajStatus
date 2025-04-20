@@ -132,7 +132,7 @@ button:hover {
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  align-items: center; /* Center content within the wrapper */
+  align-items: center;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
@@ -141,19 +141,22 @@ button:hover {
   width: 100%;
   background-color: #f8f9fa;
   display: flex;
-  justify-content: center; /* Center the Croppie viewport horizontally */
-  align-items: center; /* Center the Croppie viewport vertically */
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.cr-slider-wrap {
+  margin: 1rem auto !important;
+  width: 90% !important;
+  order: 1; /* Move slider below Crop */
 }
 
 .Tools {
   display: flex;
   padding: 1rem;
   gap: 0.625rem;
-}
-
-.Tools button {
-  flex: 1;
-  font-size: 0.9rem;
+  order: 2; /* Ensure tools are below the slider */
 }
 
 /* Preview */
@@ -180,14 +183,14 @@ button:hover {
 .croppie-container {
   width: 100% !important;
   height: auto !important;
-  display: flex; /* Ensure centering of cropper-wrapper */
+  display: flex;
   justify-content: center;
   align-items: center;
 }
 
 .cr-boundary {
   width: 100%;
-  display: flex; /* Ensure centering of viewport within boundary */
+  display: flex;
   justify-content: center;
   align-items: center;
 }
@@ -199,11 +202,6 @@ button:hover {
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
   position: relative !important;
   margin: 0 !important;
-}
-
-.cr-slider-wrap {
-  margin: 1rem auto !important;
-  width: 90% !important;
 }
 
 /* Media queries for responsive design */
@@ -219,6 +217,10 @@ button:hover {
   .cr-viewport {
     width: 75vw !important;
     height: 75vw !important;
+  }
+
+  .cr-slider-wrap {
+    margin: 0.75rem auto !important;
   }
 
   .Tools button {
@@ -263,6 +265,10 @@ button:hover {
   .cr-viewport {
     width: 85vw !important;
     height: 85vw !important;
+  }
+
+  .cr-slider-wrap {
+    margin: 0.5rem auto !important;
   }
 
   .Tools {
