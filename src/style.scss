@@ -5,6 +5,8 @@ body {
   margin: 0;
   padding: 0;
   font-family: 'Montserrat', sans-serif;
+  -webkit-font-smoothing: antialiased; /* Improve font rendering for smoother edges */
+  -moz-osx-font-smoothing: grayscale; /* Improve font rendering for grayscale fonts */
 }
 
 /* Loading state */
@@ -15,19 +17,22 @@ body {
   height: 100vh;
   font-size: 1.5rem;
   color: #333;
+  background-color: #f9f9f9; /* Light background for better contrast */
 }
 
 .Header {
   width: 100%;
-  height: 200px;
+  height: 30vh; /* Using viewport height for better responsiveness */
+  min-height: 150px; /* Ensure a minimum height */
   background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
-  margin-bottom: 20px;
+  margin-bottom: 1.5rem; /* Using rem for better scalability */
+  background-color: #eee; /* Placeholder background */
 }
 
 .Cont {
-  padding: 20px;
+  padding: 1.5rem;
   max-width: 600px;
   margin: 0 auto;
 }
@@ -35,27 +40,28 @@ body {
 .form-inputs {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  margin-bottom: 20px;
+  gap: 0.75rem; /* Using rem for spacing */
+  margin-bottom: 1.5rem;
 }
 
-.name-input, .class-input {
-  padding: 12px;
+.name-input,
+.class-input {
+  padding: 0.75rem;
   border: 1px solid #ddd;
   border-radius: 5px;
-  font-size: 16px;
+  font-size: 1rem; /* Using rem for font size */
 }
 
 .Actions {
   display: flex;
   justify-content: center;
-  margin-top: 20px;
+  margin-top: 1.5rem;
 }
 
 .button-group {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 0.625rem; /* Using rem for spacing */
   width: 100%;
 }
 
@@ -63,16 +69,17 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  padding: 12px 20px;
+  gap: 0.625rem;
+  padding: 0.75rem 1.25rem;
   background-color: #4a90e2;
   color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
   font-weight: 600;
-  transition: background-color 0.3s;
+  transition: background-color 0.3s ease-in-out; /* Smoother transition */
   width: 100%;
+  font-size: 1rem; /* Using rem for font size */
 }
 
 button:hover {
@@ -108,12 +115,9 @@ button:hover {
   justify-content: center;
   align-items: center;
   z-index: 1000;
-  transition: opacity 0.3s;
-}
-
-.cropper-container.hidden {
   opacity: 0;
   pointer-events: none;
+  transition: opacity 0.3s ease-in-out;
 }
 
 .cropper-container.visible {
@@ -129,22 +133,27 @@ button:hover {
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
 }
 
 .Crop {
-  min-height: 300px;
+  min-height: 200px; /* Adjusted min-height */
   width: 100%;
   background-color: #f8f9fa;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .Tools {
   display: flex;
-  padding: 15px;
-  gap: 10px;
+  padding: 1rem;
+  gap: 0.625rem;
 }
 
 .Tools button {
   flex: 1;
+  font-size: 0.9rem; /* Slightly smaller font for tools on mobile */
 }
 
 /* Preview */
@@ -162,8 +171,8 @@ button:hover {
 }
 
 .preview img {
-  max-width: 90%;
-  max-height: 90%;
+  max-width: 95%; /* Slightly larger max-width for preview */
+  max-height: 95%;
   object-fit: contain;
 }
 
@@ -173,12 +182,14 @@ button:hover {
   height: auto !important;
 }
 
-.cr-boundary, .cr-viewport, .cr-slider-wrap {
+.cr-boundary,
+.cr-viewport,
+.cr-slider-wrap {
   display: block !important;
 }
 
 .cr-slider-wrap {
-  margin: 15px auto !important;
+  margin: 1rem auto !important;
   width: 90% !important;
 }
 
@@ -187,28 +198,66 @@ button:hover {
   .cropper-wrapper {
     width: 95%;
   }
-  
+
   .Crop {
-    min-height: 250px;
+    min-height: 180px; /* Further adjusted min-height for smaller screens */
   }
-  
+
   .cr-viewport {
-    width: 200px !important;
-    height: 200px !important;
+    width: 70vw !important; /* Using viewport width for better responsiveness */
+    height: 70vw !important; /* Maintaining square aspect ratio */
+  }
+
+  .Tools button {
+    font-size: 0.85rem;
+    padding: 0.6rem 1rem;
   }
 }
 
 @media (max-width: 480px) {
+  .Cont {
+    padding: 1rem;
+  }
+
+  .form-inputs {
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .name-input,
+  .class-input {
+    padding: 0.6rem;
+    font-size: 0.9rem;
+  }
+
+  .Actions {
+    margin-top: 1rem;
+  }
+
+  .button-group {
+    gap: 0.5rem;
+  }
+
+  button {
+    padding: 0.6rem 1rem;
+    font-size: 0.9rem;
+  }
+
+  .Crop {
+    min-height: 150px; /* Further adjusted min-height for even smaller screens */
+  }
+
+  .cr-viewport {
+    width: 85vw !important;
+    height: 85vw !important;
+  }
+
   .Tools {
     flex-direction: column;
+    gap: 0.5rem;
   }
-  
-  .Crop {
-    min-height: 220px;
-  }
-  
-  .cr-viewport {
-    width: 150px !important;
-    height: 150px !important;
+
+  .Tools button {
+    font-size: 0.9rem;
   }
 }
