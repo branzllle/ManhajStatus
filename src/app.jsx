@@ -29,8 +29,8 @@ let Cropx = 418
 // // cut size
 // let CropH = 1650
 // let CropW = 1900
-let CropH = 1450    
-let CropW = 1190  
+let CropH = 1445    
+let CropW = 1185 
 
 export function App(props) {
   let file = document.createElement("input");
@@ -186,7 +186,7 @@ export function App(props) {
               >
                 <AiOutlineCamera size="30" />
 
-                <span>Upload photo</span>
+                <span>Upload your photo</span>
               </button>
             </div>
           )}
