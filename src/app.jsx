@@ -35,7 +35,7 @@ export function App() {
     
     // Initialize background image
     bgRef.current = new Image();
-    bgRef.current.src = "./frame.png";
+    bgRef.current.src = "/public/frame.png";
     bgRef.current.onload = () => {
       setBgLoadStatus(1);
       setIsLoading(false);
